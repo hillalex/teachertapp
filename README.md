@@ -13,15 +13,20 @@ Start a server on port 3000 with:
         cargo run
 
 ## Endpoints 
+* nb these are sensitive to trailing slashes
 
 ### GET /
 Returns a list of available endpoints.
+
+### GET /school/
+Returns a list of schools.
+Response schema: [schema/list.schema.json](schema/list.schema.json)
 
 ### GET /school/:id
 Returns a single school. 
 Response schema: [schema/school.schema.json](schema/school.schema.json)
 
-### POST /school
+### POST /school/
 Create a new school.
 Request body schema: [schema/createSchool.schema.json](schema/createSchool.schema.json)
 Response body schema: [schema/school.schema.json](schema/school.schema.json)
@@ -37,4 +42,5 @@ Response body schema: [schema/school.schema.json](schema/school.schema.json)
 * non-sqlite database 
 * JSON schema validation of endpoints in tests
 * remove trailing slash sensitivity
+* generate index route response automatically
 * 
