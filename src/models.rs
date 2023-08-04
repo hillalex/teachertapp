@@ -1,7 +1,8 @@
+use axum::{http::StatusCode, Json};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[derive(Insertable)]
 #[diesel(table_name = crate::schema::schools)]
 pub struct CreateSchool {
@@ -16,3 +17,42 @@ pub struct School {
     pub id: i32,
     pub name: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct RouteDefinition {
+    pub url: String,
+    pub method: String,
+}
+
+#[derive(Clone)]
+pub struct AppConfig {
+    pub db_url: String
+}
+
+pub struct APIError {
+    pub error: ErrorDetail,
+    pub status_code: StatusCode,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ErrorDetail {
+    pub message: String,
+}
+
+impl From<diesel::result::Error> for APIError {
+    fn from(e: diesel::result::Error) -> Self {
+        println!("{}", e);
+        match e {
+            diesel::result::Error::NotFound => APIError {
+                error: ErrorDetail { message: "Resource not found".to_string() },
+                status_code: StatusCode::NOT_FOUND,
+            },
+            _ => APIError {
+                error: ErrorDetail { message: "Unexpected error".to_string() },
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+            }
+        }
+    }
+}
+
+pub type APIErrorResponse = (StatusCode, Json<ErrorDetail>);

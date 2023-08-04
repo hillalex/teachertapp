@@ -1,17 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "School schema",
+  "title": "Create school schema",
   "type": "object",
   "properties": {
-    "id": {
-      "type": "number"
-    },
     "name": {
       "type": "string"
     }
   },
   "required": [
-    "id",
     "name"
   ],
   "additionalProperties": false
