@@ -39,14 +39,19 @@ async fn main() {
 fn app(config: AppConfig) -> Router {
     Router::new()
         .route("/", get(root))
+        .route("/school/", get(get_schools))
         .route("/school/:id", get(get_school))
-        .route("/school", post(create_school))
+        .route("/school/", post(create_school))
         .fallback(handler_404)
         .with_state(config)
 }
 
 async fn root() -> (StatusCode, Json<Vec<RouteDefinition>>) {
     (StatusCode::OK, Json(vec![
+        RouteDefinition {
+            url: "/school/".to_string(),
+            method: "GET".to_string(),
+        },
         RouteDefinition {
             url: "/school/:id".to_string(),
             method: "GET".to_string(),
@@ -59,6 +64,13 @@ async fn root() -> (StatusCode, Json<Vec<RouteDefinition>>) {
 
 async fn handler_404() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, Json("Route not found"))
+}
+
+async fn get_schools(State(config): State<AppConfig>) -> Result<Json<Vec<School>>, APIErrorResponse> {
+    database::get_schools(&config.db_url)
+        .map(|s| Json(s))
+        .map_err(APIError::from)
+        .map_err(|e| (e.status_code, Json(e.error)))
 }
 
 async fn get_school(State(config): State<AppConfig>,
@@ -91,7 +103,7 @@ mod tests {
         let client = TestClient::new(app);
         let res = client.get("/").send().await;
         assert_eq!(res.status(), StatusCode::OK);
-        assert_eq!(res.json::<Vec<RouteDefinition>>().await.len(), 2)
+        assert_eq!(res.json::<Vec<RouteDefinition>>().await.len(), 3)
     }
 
     #[tokio::test]
@@ -112,9 +124,32 @@ mod tests {
         let new_school = CreateSchool {
             name: "Newbie High".to_string()
         };
-        let res = client.post("/school").json(&new_school).send().await;
+        let res = client.post("/school/").json(&new_school).send().await;
         assert_eq!(res.status(), StatusCode::OK);
         assert_eq!(res.json::<School>().await.name, "Newbie High");
+    }
+
+    #[tokio::test]
+    async fn can_list_schools() {
+        let db = TestDatabase::new();
+        let app = app(AppConfig { db_url: db.url });
+        let client = TestClient::new(app);
+
+        // nothing exists yet, should see an empty list
+        let res = client.get("/school/").send().await;
+        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.json::<Vec<School>>().await.len(), 0);
+
+        // create a school
+        let new_school = CreateSchool {
+            name: "Newbie High".to_string()
+        };
+        client.post("/school/").json(&new_school).send().await;
+
+        // should now be able to successfully GET
+        let res = client.get("/school/").send().await;
+        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.json::<Vec<School>>().await.len(), 1);
     }
 
     #[tokio::test]
@@ -132,7 +167,7 @@ mod tests {
         let new_school = CreateSchool {
             name: "Newbie High".to_string()
         };
-        client.post("/school").json(&new_school).send().await;
+        client.post("/school/").json(&new_school).send().await;
 
         // should now be able to successfully GET
         let res = client.get("/school/1").send().await;

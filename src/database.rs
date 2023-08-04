@@ -19,6 +19,13 @@ pub fn run_migrations(db_url: &str) {
         .expect("Error running migrations");
 }
 
+pub fn get_schools(database_url: &str) -> Result<Vec<School>, Error> {
+    get_connection(database_url).transaction(|conn| {
+        schools
+            .load::<School>(conn)
+    })
+}
+
 pub fn get_school(database_url: &str, school_id: i32) -> Result<School, Error> {
     get_connection(database_url).transaction(|conn| {
         schools.filter(id.eq(school_id))
@@ -58,7 +65,29 @@ mod tests {
     }
 
     #[test]
-    fn can_get_school() {
+    fn can_get_schools() {
+        let db = TestDatabase::new();
+        let new_school = CreateSchool {
+            name: "Saint Schoolson".to_string()
+        };
+        create_school(&db.url, &new_school)
+            .expect("School created");
+
+        let new_school = CreateSchool {
+            name: "SchoolHill School".to_string()
+        };
+        create_school(&db.url, &new_school)
+            .expect("School created");
+
+        let res = get_schools(&db.url,)
+            .expect("Retrieved schools");
+
+        assert_eq!(res.len(), 2);
+        assert_eq!(res.first().unwrap().name, "Saint Schoolson");
+    }
+
+    #[test]
+    fn can_get_school_by_id() {
         let db = TestDatabase::new();
         let new_school = CreateSchool {
             name: "Saint Schoolson".to_string()

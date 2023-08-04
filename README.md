@@ -35,4 +35,6 @@ Response body schema: [schema/school.schema.json](schema/school.schema.json)
 * more fine-grained error handling
 * end-to-end tests that actually start the http server and test against it
 * non-sqlite database 
+* JSON schema validation of endpoints in tests
+* remove trailing slash sensitivity
 * 
