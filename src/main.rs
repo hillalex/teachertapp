@@ -5,32 +5,26 @@ use axum::{
     response::{IntoResponse},
     extract::{State, Path},
 };
-use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use std::net::SocketAddr;
+use std::string::ToString;
 
 mod models;
 mod schema;
-mod schools;
+mod database;
 mod test_utils;
 
 use crate::models::{CreateSchool, School, RouteDefinition, APIError, APIErrorResponse, AppConfig};
-use crate::schools::get_connection;
+use crate::database::{run_migrations};
 
 const DB_URL: &str = "database.sqlite";
 
 #[tokio::main]
 async fn main() {
-    const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
-    fn run_db_migrations(conn: &mut impl MigrationHarness<diesel::sqlite::Sqlite>) {
-        conn.run_pending_migrations(MIGRATIONS)
-            .expect("Could not run migrations");
-    }
+    run_migrations(DB_URL);
 
-    run_db_migrations(&mut get_connection(DB_URL));
-
-    let config = AppConfig {
-        db_url: DB_URL.to_string(),
+    let config: AppConfig = AppConfig {
+        db_url:  "database.sqlite".to_string()
     };
 
     let app = app(config);
@@ -69,7 +63,7 @@ async fn handler_404() -> impl IntoResponse {
 
 async fn get_school(State(config): State<AppConfig>,
                     Path(school_id): Path<i32>) -> Result<Json<School>, APIErrorResponse> {
-    schools::get_school(&config.db_url, school_id)
+    database::get_school(&config.db_url, school_id)
         .map(|s| Json(s))
         .map_err(APIError::from)
         .map_err(|e| (e.status_code, Json(e.error)))
@@ -77,7 +71,7 @@ async fn get_school(State(config): State<AppConfig>,
 
 async fn create_school(State(config): State<AppConfig>,
                        Json(payload): Json<CreateSchool>) -> Result<Json<School>, APIErrorResponse> {
-    schools::create_school(&config.db_url, &payload)
+    database::create_school(&config.db_url, &payload)
         .map(|s| Json(s))
         .map_err(APIError::from)
         .map_err(|e| (e.status_code, Json(e.error)))
@@ -93,7 +87,7 @@ mod tests {
     #[tokio::test]
     async fn can_get_index() {
         let db = TestDatabase::new();
-        let app = app(AppConfig { db_url: db.url.clone() });
+        let app = app(AppConfig { db_url: db.url });
         let client = TestClient::new(app);
         let res = client.get("/").send().await;
         assert_eq!(res.status(), StatusCode::OK);
@@ -103,7 +97,7 @@ mod tests {
     #[tokio::test]
     async fn can_handle_404() {
         let db = TestDatabase::new();
-        let app = app(AppConfig { db_url: db.url.clone()  });
+        let app = app(AppConfig { db_url: db.url });
         let client = TestClient::new(app);
         let res = client.get("/badurl").send().await;
         assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -113,7 +107,7 @@ mod tests {
     #[tokio::test]
     async fn can_create_school() {
         let db = TestDatabase::new();
-        let app = app(AppConfig { db_url: db.url.clone()  });
+        let app = app(AppConfig { db_url: db.url });
         let client = TestClient::new(app);
         let new_school = CreateSchool {
             name: "Newbie High".to_string()
@@ -126,7 +120,7 @@ mod tests {
     #[tokio::test]
     async fn can_get_school() {
         let db = TestDatabase::new();
-        let app = app(AppConfig { db_url: db.url.clone() });
+        let app = app(AppConfig { db_url: db.url });
         let client = TestClient::new(app);
 
         // nothing exists yet, should see a 404

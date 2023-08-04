@@ -1,13 +1,22 @@
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel::result::Error;
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 
 use crate::models::{CreateSchool, School};
 use crate::schema::schools::dsl::*;
 
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
 pub fn get_connection(database_url: &str) -> SqliteConnection {
     SqliteConnection::establish(database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+}
+
+pub fn run_migrations(db_url: &str) {
+    let mut conn = get_connection(db_url);
+    conn.run_pending_migrations(MIGRATIONS)
+        .expect("Error running migrations");
 }
 
 pub fn get_school(database_url: &str, school_id: i32) -> Result<School, Error> {

@@ -3,7 +3,7 @@ pub mod test_utils {
     use tempfile::NamedTempFile;
 
     use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
-    use crate::schools::get_connection;
+    use crate::database::get_connection;
 
     const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
