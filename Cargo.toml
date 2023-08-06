@@ -2,6 +2,7 @@
 name = "teachertapp"
 version = "0.1.0"
 edition = "2021"
+include = ["schema/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,6 +11,8 @@ axum = "0.6.18"
 axum-test-helper = "0.3.0"
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = "2.1.0"
+project-root = "0.2.2"
+schemars = "0.8.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.99"
 tempfile = "3.6.0"

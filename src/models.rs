@@ -1,10 +1,12 @@
 use axum::{http::StatusCode, Json};
 use diesel::prelude::*;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[derive(Insertable)]
 #[diesel(table_name = crate::schema::schools)]
+#[derive(JsonSchema)]
 pub struct CreateSchool {
     pub name: String,
 }
@@ -13,6 +15,7 @@ pub struct CreateSchool {
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = crate::schema::schools)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+#[derive(JsonSchema)]
 pub struct School {
     pub id: i32,
     pub name: String,
@@ -35,6 +38,7 @@ pub struct APIError {
 }
 
 #[derive(Serialize, Deserialize)]
+#[derive(JsonSchema)]
 pub struct ErrorDetail {
     pub message: String,
 }

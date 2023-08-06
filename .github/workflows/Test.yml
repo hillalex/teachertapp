@@ -1,0 +1,26 @@
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+name: Test
+
+jobs:
+  build_and_test:
+    name: Teachertapp API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy
+      - name: Lint
+        run: cargo clippy -- -D warnings
+      - name: Check
+        run: cargo check --release --all-features
+      - name: Build Schema
+        run: cargo run --bin api_schema
+      - name: Test
+        run: cargo test

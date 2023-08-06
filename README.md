@@ -8,9 +8,15 @@ for a production context but serves the purposes of this demo.
 * cargo
 
 ## Run
-Start a server on port 3000 with:
+This project contains two binaries; one to generate JSON schema files from Rust structs, 
+the other to start the API.
+1. To generate JSON schemas:
+        
+        cargo run --bin api_schema
 
-        cargo run
+2. To start the API server on port 8080:
+
+        cargo run --bin api
 
 ## Endpoints 
 * nb these are sensitive to trailing slashes
@@ -20,16 +26,16 @@ Returns a list of available endpoints.
 
 ### GET /school/
 Returns a list of schools.
-Response schema: [schema/list.schema.json](schema/list.schema.json)
+Response schema: [schema/List.schema.json](schema/List.schema.json)
 
 ### GET /school/:id
 Returns a single school. 
-Response schema: [schema/school.schema.json](schema/school.schema.json)
+Response schema: [schema/School.schema.json](schema/School.schema.json)
 
 ### POST /school/
 Create a new school.
-Request body schema: [schema/createSchool.schema.json](schema/createSchool.schema.json)
-Response body schema: [schema/school.schema.json](schema/school.schema.json)
+Request body schema: [schema/CreateSchool.schema.json](schema/CreateSchool.schema.json)
+Response body schema: [schema/School.schema.json](schema/School.schema.json)
 
 ## Test
         cargo test
@@ -38,9 +44,8 @@ Response body schema: [schema/school.schema.json](schema/school.schema.json)
 * add PATCH and DELETE endpoints
 * add logging
 * more fine-grained error handling
-* end-to-end tests that actually start the http server and test against it
-* non-sqlite database 
-* JSON schema validation of endpoints in tests
+* integration tests that actually start the http server and test against it, including JSON schema validation
+* non-sqlite database
 * remove trailing slash sensitivity
 * generate index route response automatically
-* 
+* ...

@@ -50,7 +50,7 @@ pub fn create_school(database_url: &str, new_school: &CreateSchool) -> Result<Sc
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::*;
+    use crate::test_utils::TestDatabase;
 
     #[test]
     fn can_insert_school() {

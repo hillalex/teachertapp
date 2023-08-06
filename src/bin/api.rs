@@ -8,13 +8,9 @@ use axum::{
 use std::net::SocketAddr;
 use std::string::ToString;
 
-mod models;
-mod schema;
-mod database;
-mod test_utils;
-
-use crate::models::{CreateSchool, School, RouteDefinition, APIError, APIErrorResponse, AppConfig};
-use crate::database::{run_migrations};
+use teachertapp::database;
+use teachertapp::database::*;
+use teachertapp::models::*;
 
 const DB_URL: &str = "database.sqlite";
 
@@ -29,7 +25,7 @@ async fn main() {
 
     let app = app(config);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
@@ -93,8 +89,7 @@ async fn create_school(State(config): State<AppConfig>,
 mod tests {
     use super::*;
     use axum_test_helper::TestClient;
-    use crate::models::ErrorDetail;
-    use crate::test_utils::test_utils::*;
+    use teachertapp::test_utils::TestDatabase;
 
     #[tokio::test]
     async fn can_get_index() {
