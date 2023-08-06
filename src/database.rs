@@ -47,6 +47,14 @@ pub fn create_school(database_url: &str, new_school: &CreateSchool) -> Result<Sc
     })
 }
 
+pub fn delete_school(database_url: &str, school_id: i32) -> Result<usize, Error> {
+    get_connection(database_url).transaction(|conn| {
+        diesel::delete(schools)
+            .filter(id.eq(school_id))
+            .execute(conn)
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
