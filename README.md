@@ -5,7 +5,7 @@
 
 This is a very simple proof-of-concept API written in Rust, making use of the 
 Axum and Diesel libraries. It uses sqlite as a database, which is totally unsuitable 
-for a production context but serves the purposes of this demo.
+for a production context but serves the purposes of this demo!
 
 ## Requirements
 * cargo
@@ -44,7 +44,7 @@ Response body schema: [schema/School.schema.json](schema/School.schema.json)
         cargo test
 
 ## TODO
-* add PATCH and DELETE endpoints
+* add PATCH endpoint
 * add logging
 * more fine-grained error handling
 * integration tests that actually start the http server and test against it, including JSON schema validation
