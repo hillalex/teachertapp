@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use schemars::schema_for;
 use teachertapp::models::*;
 
@@ -28,7 +28,7 @@ fn get_schema_root() -> PathBuf {
     root.join("schema")
 }
 
-fn write_schema_to_file(schema_root: &PathBuf, filename: PathBuf, contents: String) {
+fn write_schema_to_file(schema_root: &Path, filename: PathBuf, contents: String) {
     let path = schema_root.join(filename);
     fs::File::create(&path).expect("Created schema file");
     fs::write(path, contents).expect("Wrote schema")

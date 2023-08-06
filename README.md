@@ -1,4 +1,7 @@
 # Schools API
+![Test](https://github.com/hillalex/teachertapp/actions/workflows/Test.yml/badge.svg?branch=main)
+[![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+
 
 This is a very simple proof-of-concept API written in Rust, making use of the 
 Axum and Diesel libraries. It uses sqlite as a database, which is totally unsuitable 

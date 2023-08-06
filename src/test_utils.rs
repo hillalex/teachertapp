@@ -21,3 +21,9 @@ impl TestDatabase {
         }
     }
 }
+
+impl Default for TestDatabase {
+    fn default() -> Self {
+        Self::new()
+    }
+}

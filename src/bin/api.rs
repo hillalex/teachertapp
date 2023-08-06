@@ -19,11 +19,10 @@ const DB_URL: &str = "database.sqlite";
 
 #[tokio::main]
 async fn main() {
-
     run_migrations(DB_URL);
 
     let config: AppConfig = AppConfig {
-        db_url:  "database.sqlite".to_string()
+        db_url: "database.sqlite".to_string()
     };
 
     let cors = CorsLayer::new()
@@ -74,7 +73,7 @@ async fn handler_404() -> impl IntoResponse {
 
 async fn get_schools(State(config): State<AppConfig>) -> Result<Json<Vec<School>>, APIErrorResponse> {
     database::get_schools(&config.db_url)
-        .map(|s| Json(s))
+        .map(Json)
         .map_err(APIError::from)
         .map_err(|e| (e.status_code, Json(e.error)))
 }
@@ -82,7 +81,7 @@ async fn get_schools(State(config): State<AppConfig>) -> Result<Json<Vec<School>
 async fn get_school(State(config): State<AppConfig>,
                     Path(school_id): Path<i32>) -> Result<Json<School>, APIErrorResponse> {
     database::get_school(&config.db_url, school_id)
-        .map(|s| Json(s))
+        .map(Json)
         .map_err(APIError::from)
         .map_err(|e| (e.status_code, Json(e.error)))
 }
@@ -90,7 +89,7 @@ async fn get_school(State(config): State<AppConfig>,
 async fn create_school(State(config): State<AppConfig>,
                        Json(payload): Json<CreateSchool>) -> Result<Json<School>, APIErrorResponse> {
     database::create_school(&config.db_url, &payload)
-        .map(|s| Json(s))
+        .map(Json)
         .map_err(APIError::from)
         .map_err(|e| (e.status_code, Json(e.error)))
 }
@@ -98,7 +97,7 @@ async fn create_school(State(config): State<AppConfig>,
 async fn delete_school(State(config): State<AppConfig>,
                        Path(school_id): Path<i32>) -> Result<Json<usize>, APIErrorResponse> {
     database::delete_school(&config.db_url, school_id)
-        .map(|s| Json(s))
+        .map(Json)
         .map_err(APIError::from)
         .map_err(|e| (e.status_code, Json(e.error)))
 }
