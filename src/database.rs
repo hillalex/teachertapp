@@ -115,4 +115,27 @@ mod tests {
         assert_eq!(res.id, 2);
         assert_eq!(res.name, "SchoolHill School");
     }
+
+    #[test]
+    fn can_delete_schools() {
+        let db = TestDatabase::new();
+        let new_school = CreateSchool {
+            name: "Saint Schoolson".to_string()
+        };
+        create_school(&db.url, &new_school)
+            .expect("School created");
+        create_school(&db.url, &new_school)
+            .expect("School created");
+
+        let res = get_schools(&db.url,)
+            .expect("Retrieved schools");
+
+        assert_eq!(res.len(), 2);
+
+        delete_school(&db.url, 1).unwrap();
+        let res = get_schools(&db.url,)
+            .expect("Retrieved schools");
+
+        assert_eq!(res.len(), 1);
+    }
 }

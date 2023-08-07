@@ -1,6 +1,8 @@
 use tempfile::NamedTempFile;
 use crate::database::run_migrations;
 
+// This struct can be used to provide a temorary sqlite database for
+// testing that gets cleaned up when it goes out of scope.
 pub struct TestDatabase {
     pub url: String,
     // Keep this around so the NamedFile doesn't go out of scope
