@@ -51,6 +51,7 @@ To turn this into a production ready app, some starting points:
 * more fine-grained error handling
 * integration tests that actually start the http server and test against it, including JSON schema validation
 * non-sqlite database
+* make app configurable (db url, port, CORS, etc)
 * remove trailing slash sensitivity
 * generate index route response automatically
 * ...

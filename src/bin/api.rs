@@ -25,6 +25,8 @@ async fn main() {
         db_url: "database.sqlite".to_string()
     };
 
+    // CORS needed for dev but should be configurable
+    // as will likely not be wanted in production
     let cors = CorsLayer::new()
         .allow_methods(vec![Method::GET, Method::POST, Method::DELETE])
         .allow_headers([CONTENT_TYPE])
@@ -64,6 +66,10 @@ async fn root() -> (StatusCode, Json<Vec<RouteDefinition>>) {
         RouteDefinition {
             url: "/school/".to_string(),
             method: "POST".to_string(),
+        },
+        RouteDefinition {
+            url: "/school/:id".to_string(),
+            method: "DELETE".to_string(),
         }]))
 }
 
@@ -115,7 +121,7 @@ mod tests {
         let client = TestClient::new(app);
         let res = client.get("/").send().await;
         assert_eq!(res.status(), StatusCode::OK);
-        assert_eq!(res.json::<Vec<RouteDefinition>>().await.len(), 3)
+        assert_eq!(res.json::<Vec<RouteDefinition>>().await.len(), 4)
     }
 
     #[tokio::test]
